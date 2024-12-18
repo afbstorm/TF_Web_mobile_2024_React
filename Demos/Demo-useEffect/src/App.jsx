@@ -1,34 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from "react";
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [count, setCount] = useState(0);
+    const [name, setName] = useState('');
+    const [isEven, setIsEven] = useState(true);
+
+    useEffect(() => {
+        console.log('useEffect (tableau de dépendance vide) : il s\'exécute UNE SEULE FOIS au début du cycle de vie du composant')
+    }, []);
+
+    useEffect(() => {
+        console.log('useEffect 2 (sans tableau de dépendance) : il s\'exécute au moindre changement dns le composant')
+    });
+
+    useEffect(() => {
+        console.log('useEffect 3 (tableau de dépendant peuplé) : il s\'exécute à chaque fois que la valeur de ou des élément(s) du tableau de dépendance change(nt)')
+        setIsEven(count % 2 === 0);
+    }, [count]);
+
+    useEffect(() => {
+        console.log('useEffect 4 (avec nettoyage) : il va activer un " abonnement " ensuite, va le nettoyer (le supprimer)');
+        const timer = setTimeout(() => {
+            console.log('Abonnement crée avec succès ✅');
+        }, 2000)
+
+        return (() => {
+            console.log('Désabonné ☠️');
+            clearTimeout(timer)
+        })
+    }, [name]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+    <div>
         <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+            Compteur : {count} est {isEven ? 'pair' : 'impair'}
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+        <button onClick={() => setCount(prevCount => prevCount + 1)}>
+            Incrémenter
+        </button>
+
+        <br/>
+
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
+        <p>Nom : {name}</p>
+    </div>
   )
 }
 
